@@ -1,6 +1,6 @@
 # Every change needs a review from the repo owner.
-*           @PLACEHOLDER_OWNER
+*           @intilauberer
 
 # Money and settlement logic is the risky part of this codebase.
-/app/money.py       @PLACEHOLDER_OWNER
-/.github/           @PLACEHOLDER_OWNER
+/app/money.py       @intilauberer
+/.github/           @intilauberer
