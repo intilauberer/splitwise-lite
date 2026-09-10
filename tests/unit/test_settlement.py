@@ -61,6 +61,11 @@ class TestTransfer:
 
 
 class TestPreconditions:
+    def test_mixed_currencies_are_rejected_even_when_every_balance_is_zero(self) -> None:
+        """A bucket spanning currencies is malformed regardless of its values."""
+        with pytest.raises(ValueError, match="across currencies"):
+            settle_greedily({A: Money(0, "EUR"), B: Money(0, "USD")})
+
     def test_rejects_balances_that_do_not_sum_to_zero(self) -> None:
         """Not user input -- a non-zero sum means the caller has a bug."""
         with pytest.raises(ValueError, match="must sum to zero"):
