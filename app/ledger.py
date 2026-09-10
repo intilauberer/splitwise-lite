@@ -65,13 +65,20 @@ class Ledger:
                 bucket[participant] = net if current is None else current + net
         return buckets
 
-    def settle(self) -> list[Transfer]:
-        """Who should pay whom to square the group, one currency at a time.
+    def settle(self) -> dict[str, list[Transfer]]:
+        """Who should pay whom to square the group, bucketed by currency.
 
-        Currencies are settled in sorted order so the result is deterministic.
+        Mirrors :meth:`balances`. Currencies are never netted against each
+        other, so the transfers settling one are not comparable with -- nor
+        summable against -- those settling another. Returning them already
+        separated puts that in the type, where a caller cannot miss it: a flat
+        list would make ``sum(t.amount for t in ...)`` look reasonable, and it
+        raises on a ledger holding more than one currency.
+
+        A currency with nothing left to settle maps to an empty list rather
+        than being dropped, so the keys always match those of :meth:`balances`.
+
+        Currencies are iterated in sorted order so the result is deterministic.
         """
         buckets = self.balances()
-        transfers: list[Transfer] = []
-        for currency in sorted(buckets):
-            transfers.extend(settle_greedily(buckets[currency]))
-        return transfers
+        return {currency: settle_greedily(buckets[currency]) for currency in sorted(buckets)}
